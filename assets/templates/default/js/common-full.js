@@ -186,3 +186,30 @@
         $(window).resize();
     })
 })();
+
+$(function() {
+    var $tapablePhones = $('.tapable-phone');
+
+    $tapablePhones.each(function() {
+        var href = $(this).attr('data-phone');
+
+        if (!href) {
+            href = this.innerText.replace(/[^\d]+/g, '');
+        }
+
+        $(this).data('href', 'tel:' + href);
+        $(this).data('originalMarkup', this.innerHTML);
+    });
+
+    $(window).on('custombreakpoint', function(e, breakpoint) {
+        $tapablePhones.each(function() {
+            var $self = $(this);
+
+            if (breakpoint == 'xs' || breakpoint == 'sm') {
+                this.innerHTML = '<a href="' + $self.data('href') + '">' + $self.data('originalMarkup') + '</a>';
+            } else {
+                this.innerHTML = $self.data('originalMarkup');
+            }
+        });
+    });
+});
