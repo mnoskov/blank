@@ -40,7 +40,7 @@ $(function() {
 	})();
 });
 
-!function(){var o,n=[{breakpoint:1200,layout:"xl"},{breakpoint:991,layout:"lg"},{breakpoint:767,layout:"md"},{breakpoint:575,layout:"sm"},{breakpoint:0,layout:"xs"}];$(window).on("resize",function(){for(var t=0;t<n.length;t++)if(window.innerWidth>n[t].breakpoint){n[t].layout!=o&&(o=n[t].layout,$(window).trigger("breakpoint",o));break}}).resize()}();
+!function(){var i,n=[{width:1449,breakpoint:"xxl"},{width:1200,breakpoint:"xl"},{width:991,breakpoint:"lg"},{width:767,breakpoint:"md"},{width:575,breakpoint:"sm"},{width:0,breakpoint:"xs"}];$(window).on("resize",function(){for(var t=0;t<n.length;t++)if(window.innerWidth>n[t].width){n[t].breakpoint!=i&&(i=n[t].breakpoint,$(window).trigger("custombreakpoint",i));break}}),$(function(){$(window).resize()})}();
 
 $(document).on("click","a.scroll-to[href*='#']",function(t){var o=$($(this).attr("href")),e=$(this).closest(".scroll-offset").outerHeight()||1;o.length&&$("html, body").stop().animate({scrollTop:o.offset().top-(e-1)},1e3),t.preventDefault()});
 

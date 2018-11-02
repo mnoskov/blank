@@ -4,8 +4,7 @@
  * Удаление из телефона всего кроме цифр
  * 
  * @category    snippet
- * @internal    @properties
  * @internal    @installset sample
  */
- 
-return "+" . preg_replace( '/[^\d]+/', '', $in );
+//<?php
+return "+" . preg_replace('/^8/', '7', preg_replace('/[^\d]+/', '', $in));
