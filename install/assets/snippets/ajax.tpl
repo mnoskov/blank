@@ -23,6 +23,16 @@ if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
             return '';
         }
 
+        $params = include $config;
+
+        foreach (['prepare', 'prepareProcess', 'prepareAfterProcess'] as $param) {
+            if (empty($params[$param])) {
+                $params[$param] = [];
+            } else if (!is_array($params[$param])) {
+                $params[$param] = [$params[$param]];
+            }
+        }
+
         $params = array_merge([
             'formid'            => $formid,
             'to'                => $modx->getConfig('client_email_recipients'),
@@ -30,7 +40,7 @@ if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
             'apiFormat'         => 'raw',
             'saveObject'        => '_FormLister',
             'parseMailerParams' => 1,
-            'prepareProcess'    => [
+            'prepareProcess'    => array_merge($params['prepareProcess'], [
                 function($modx, $data, $fl, $name) {
                     if (isset($data['pid']) && is_numeric($data['pid'])) {
                         $fl->setField('page', $modx->runSnippet('DLCrumbs', [
@@ -44,8 +54,8 @@ if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
                         ]));
                     }
                 },
-            ],
-        ], include $config);
+            ]),
+        ], $params);
 
         $data = $modx->runSnippet('FormLister', $params);
 

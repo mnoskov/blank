@@ -66,4 +66,7 @@ return [
             <tr><td>Страница:&nbsp;</td><td>[+page.value+]</td></tr>
         </table>
     ',
+//    'prepareProcess' => function($modx, $data, $_FL, $name) {
+//
+//    },
 ];
