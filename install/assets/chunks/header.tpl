@@ -8,7 +8,7 @@
  * @internal    @installset sample
  */
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
 	<title>[[metatitle]]</title>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"> 
@@ -31,7 +31,7 @@
 				<div class="container">
 					<div class="pull-xs-left">
 						<div class="logo">
-							<a href="/"><img src="[(client_company_logo)]" class="img-fluid"></a>
+							<a href="/"><img src="[(client_company_logo)]" class="img-fluid" alt="[(site_name)]"></a>
 						</div>
 
 						<div class="pull-xs-left show-on-top hidden-md-down text">
