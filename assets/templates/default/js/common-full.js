@@ -104,7 +104,6 @@
                             }
                         } else if (response.response == 'success') {
                             $form.trigger('success-submit', response);
-                            $form.reachGoal();
                             $form.get(0).reset();
                             $form.closest('.modal').modal('hide');
                             $response.find('.modal-body > .response').html(response.messages.join('<br>'));
