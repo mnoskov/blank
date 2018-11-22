@@ -11,7 +11,11 @@
 <div class="policy-note">
     <div class="form-group">
         <label>
-            <input type="checkbox" name="agree" value="1">
+            <span class="checkbox-wrap">
+                <input type="checkbox" name="agree" value="1" checked>
+                <span class="checkbox"></span>
+            </span>
+
             Я согласен на <a href="[(client_policy)]" target="_blank">обработку персональных данных</a>
         </label>
     </div>
