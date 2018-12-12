@@ -155,11 +155,19 @@
             }
         }
     });
+
+    $(function() {
+        if (window.location.hash != '' && window.location.hash.match(/^#[a-z\d_]+$/)) {
+            var $modal = $('.modal' + window.location.hash);
+
+            if ($modal.length) {
+                $modal.modal('show');
+            }
+        }
+    });
 })();
 
 (function() {
-    var currentWidth;
-
     var layouts = [
         {width: 1449, breakpoint: 'xxl'},
         {width: 1200, breakpoint: 'xl'},
@@ -172,9 +180,9 @@
     $(window).on('resize', function() {
         for (var i = 0; i < layouts.length; i++) {
             if (window.innerWidth > layouts[i].width) {
-                if (layouts[i].breakpoint != currentWidth) {
-                    currentWidth = layouts[i].breakpoint;
-                    $(window).trigger('custombreakpoint', currentWidth);
+                if (layouts[i].breakpoint != $.currentBreakpoint) {
+                    $.currentBreakpoint = layouts[i].breakpoint;
+                    $(window).trigger('custombreakpoint', $.currentBreakpoint);
                 }
                 break;
             }
