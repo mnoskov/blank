@@ -40,6 +40,7 @@ if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
             'apiFormat'         => 'raw',
             'saveObject'        => '_FormLister',
             'parseMailerParams' => 1,
+        ], $params, [
             'prepareProcess'    => array_merge($params['prepareProcess'], [
                 function($modx, $data, $fl, $name) {
                     if (isset($data['pid']) && is_numeric($data['pid'])) {
@@ -55,7 +56,7 @@ if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
                     }
                 },
             ]),
-        ], $params);
+        ]);
 
         $data = $modx->runSnippet('FormLister', $params);
 
