@@ -128,18 +128,15 @@
     });
 
     $('.modal').on('show.bs.modal', function(e) {
-        var $trigger = $(e.relatedTarget),
-            $modal = $(this);
+        if (e.relatedTarget) {
+            var $modal = $(this);
 
-        if ($trigger.length) {
-            var data = $trigger.data();
+            $.each(e.relatedTarget.attributes, function(i, attr) {
+                var match = attr.name.match(/^data-set-([a-zA-Z-_0-9]+)/);
 
-            for (var p in data) {
-                if (data.hasOwnProperty(p) && /^set[A-Z]+/.test(p)) {
-                    var val = data[p],
-                        name = p.match(/^set(.*)/)[1].replace(/^[A-Z]/, function(s) {
-                            return (s || '').toLowerCase();
-                        });
+                if (match) {
+                    var name = match[1],
+                        val  = attr.value;
 
                     $modal.find('[name="' + name + '"]').val(val);
                     $modal.find('[data-get="' + name + '"]').each(function() {
@@ -152,7 +149,7 @@
                         }
                     });
                 }
-            }
+            });
         }
     });
 
