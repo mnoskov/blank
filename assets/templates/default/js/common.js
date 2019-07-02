@@ -1,16 +1,18 @@
+var slickDefaults = {
+    prevArrow: '<a href="#" class="ctrl prev"><i class="icon-left-arrow"></i></a>', 
+    nextArrow: '<a href="#" class="ctrl next"><i class="icon-right-arrow"></i></a>',
+    swipeToSlide: true,
+    customPaging: function() {
+        return '<span></span>';
+    }
+};
+
 $(function() {
 	if ($.mask) {
 		$('input.mask-phone').mask('+7 (999) 999-99-99');
 	}
 
-	$('.slick').slick({
-		prevArrow: '<a href="#" class="ctrl prev"><i class="icon-left-arrow"></i></a>', 
-		nextArrow: '<a href="#" class="ctrl next"><i class="icon-right-arrow"></i></a>',
-		swipeToSlide: true,
-		customPaging: function() {
-			return '<span></span>';
-		}
-	});
+	$('.slick').slick(slickDefaults);
 });
 
 /**
