@@ -13,6 +13,10 @@ $(function() {
 	}
 
 	$('.slick').slick(slickDefaults);
+
+    $('.user-content iframe').each(function() {
+        $(this).addClass('embed-responsive-item').wrap('<div class="embed-responsive embed-responsive-16by9"/>');
+    });
 });
 
 /**
