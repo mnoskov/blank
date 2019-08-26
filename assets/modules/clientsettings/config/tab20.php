@@ -24,5 +24,20 @@ return [
             'caption' => 'Одноклассники',
             'type'  => 'text',
         ],
+        'divider' => [
+            'type' => 'divider',
+        ],
+        'og_title' => [
+            'caption' => 'Open Graph заголовок',
+            'type' => 'text',
+        ],
+        'og_image' => [
+            'caption' => 'Open Graph изображение',
+            'type' => 'image',
+        ],
+        'og_description' => [
+            'caption' => 'Open Graph описание',
+            'type' => 'textarea',
+        ],
     ],
 ];

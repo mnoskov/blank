@@ -1,13 +1,14 @@
-﻿/**
+//<?php
+/**
  * metaheaders
- * 
+ *
  * render seo and opengraph headers
- * 
+ *
  * @category    snippet
  * @internal    @properties
  * @internal    @installset sample
  */
- 
+
 $tags = [
     'meta_description' => 'description',
     'meta_keywords'    => 'keywords',
@@ -19,13 +20,28 @@ $tags = [
 $output = '';
 
 foreach ($tags as $tv => $tag) {
+    $value = '';
+
     if (!empty($modx->documentObject[$tv][1])) {
-        $output .= '<meta name="' . $tag . '" content="' . $modx->documentObject[$tv][1] . '">' . "\n\t";
-        continue;
+        $value = $modx->documentObject[$tv][1];
+    } else {
+        $conf = $modx->getConfig('client_' . $tv);
+
+        if (!empty($conf)) {
+            $value = $conf;
+        } else {
+            if ($tv == 'og_title') {
+                $value = $modx->runSnippet('metatitle');
+            }
+        }
     }
-    
-    if ($tv == 'og_title') {
-        $output .= '<meta name="' . $tag . '" content="' . $modx->runSnippet('metatitle') . '">' . "\n\t";
+
+    if (!empty($value)) {
+        if ($tv == 'og_image') {
+            $value = $modx->getConfig('site_url') . $value;
+        }
+
+        $output .= '<meta name="' . $tag . '" content="' . $value . '">' . "\n\t";
     }
 }
 
