@@ -217,3 +217,49 @@ $(function() {
         });
     });
 });
+
+(function() {
+    var injectMapOverlay = function() {
+        $('div > ymaps').each(function() {
+            var $overlay = $(this).children('.touch-overlay');
+
+            if (!$overlay.length) {
+                $overlay = $('<div class="touch-overlay">Для взаимодействия с картой нажмите сюда</div>').appendTo(this);
+
+                (function($overlay) {
+                    var overlay = $overlay.get(0);
+
+                    overlay.addEventListener('touchstart', function() {
+                        $overlay.addClass('touched');
+                    }, false);
+
+                    overlay.addEventListener('touchend', function() {
+                        $overlay.removeClass('touched');
+                    }, false);
+
+                    $overlay.on('click dragstart', function() {
+                        $overlay.remove();
+                    });
+                })($overlay);
+            }
+        });
+    };
+
+    var interval = setInterval(function() {
+        injectMapOverlay();
+    }, 200);
+
+    $(window).load(function() {
+        var ym = window.ymaps || window.ymaps_ctor__ru_RU____;
+
+        if (typeof ym == 'object') {
+            ym.ready(injectMapOverlay);
+        }
+
+        clearInterval(interval);
+    });
+
+    $(function() {
+        $(document.body).append('<style>.touch-overlay{position:absolute;left:0;top:0;right:0;bottom:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(80,80,80,0.7);color:#fff;font-size:1rem;cursor:pointer;z-index:1;opacity:0;transition:all 0.3s ease;padding:2rem;text-align:center;@media(min-width:576px){display:none!important;}&.touched{opacity:1;}}</style>');
+    });
+})();
