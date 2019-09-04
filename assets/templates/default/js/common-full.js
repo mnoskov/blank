@@ -260,6 +260,6 @@ $(function() {
     });
 
     $(function() {
-        $(document.body).append('<style>.touch-overlay{position:absolute;left:0;top:0;right:0;bottom:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(80,80,80,0.7);color:#fff;font-size:1rem;cursor:pointer;z-index:1;opacity:0;transition:all 0.3s ease;padding:2rem;text-align:center;@media(min-width:576px){display:none!important;}&.touched{opacity:1;}}</style>');
+        $(document.body).append('<style>.touch-overlay{position:absolute;left:0;top:0;right:0;bottom:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(80,80,80,0.7);color:#fff;font-size:1rem;cursor:pointer;z-index:1;opacity:0;transition:all 0.3s ease;padding:2rem;text-align:center;}@media(min-width: 576px){.touch-overlay {display:none!important;}}.touch-overlay.touched{opacity:1;}</style>');
     });
 })();
