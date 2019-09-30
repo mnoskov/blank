@@ -59,31 +59,41 @@ if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
     $formid = $_POST['formid'];
 
     if (is_string($formid) && preg_match('/^[a-z]{2,32}$/', $formid)) {
-        $config = MODX_BASE_PATH . 'assets/snippets/FormLister/config/custom/' . $formid . '.inc.php';
-
-        if (!file_exists($config)) {
-            return '';
-        }
-
-        $params = include $config;
-
-        foreach (['prepare', 'prepareProcess', 'prepareAfterProcess'] as $param) {
-            if (empty($params[$param])) {
-                $params[$param] = [];
-            } else if (!is_array($params[$param])) {
-                $params[$param] = [$params[$param]];
-            }
-        }
-
-        $params = array_merge([
+        $params = [
             'formid'            => $formid,
             'to'                => $modx->getConfig('client_email_recipients'),
             'api'               => 1,
             'apiFormat'         => 'raw',
             'saveObject'        => '_FormLister',
             'parseMailerParams' => 1,
-        ], $params, [
-            'prepareProcess'    => array_merge($params['prepareProcess'], [
+        ];
+
+        foreach (['common', $formid] as $required => $filename) {
+            $filename = MODX_BASE_PATH . 'assets/snippets/FormLister/config/custom/' . $filename . '.inc.php';
+
+            if (!is_readable($filename)) {
+                if ($required) {
+                    return '';
+                } else {
+                    continue;
+                }
+            }
+
+            $config = include $filename;
+
+            foreach (['prepare', 'prepareProcess', 'prepareAfterProcess'] as $param) {
+                if (empty($config[$param])) {
+                    $config[$param] = [];
+                } else if (!is_array($config[$param])) {
+                    $config[$param] = [$config[$param]];
+                }
+            }
+
+            $params = array_merge($params, $config);
+        }
+
+        $params = array_merge($params, [
+            'prepareProcess' => array_merge($config['prepareProcess'], [
                 function($modx, $data, $fl, $name) {
                     if (isset($data['pid']) && is_numeric($data['pid'])) {
                         $fl->setField('page', $modx->runSnippet('DLCrumbs', [
