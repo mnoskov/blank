@@ -41,7 +41,7 @@ foreach ($tags as $tv => $tag) {
             $value = $modx->getConfig('site_url') . $value;
         }
 
-        $output .= '<meta name="' . $tag . '" content="' . $value . '">' . "\n\t";
+        $output .= '<meta property="' . $tag . '" content="' . $value . '">' . "\n\t";
     }
 }
 
