@@ -59,9 +59,14 @@ if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
     $formid = $_POST['formid'];
 
     if (is_string($formid) && preg_match('/^[a-z]{2,32}$/', $formid)) {
+        $to = $modx->getConfig('client_email_recipients_' . $formid);
+        if (empty($to)) {
+            $to = $modx->getConfig('client_email_recipients');
+        }
+
         $params = [
             'formid'            => $formid,
-            'to'                => $modx->getConfig('client_email_recipients'),
+            'to'                => $to,
             'api'               => 1,
             'apiFormat'         => 'raw',
             'saveObject'        => '_FormLister',
