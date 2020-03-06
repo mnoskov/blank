@@ -16,16 +16,17 @@
                 squery:   escape(window.location.search),
                 sreferer: escape(document.referrer)
             },
-            data;
+            data,
+            key;
 
         if (window.FormData) {
             data = new FormData($form.get(0));
-            for (var key in params) {
+            for (key in params) {
                 data.append(key, params[key]);
             }
         } else {
             data = $form.serialize();
-            for (var key in params) {
+            for (key in params) {
                 data += '&' + key + '=' + params[key];
             }
         }
@@ -46,6 +47,7 @@
                 },
                 complete: function(xhr, status) {
                     var $response = $('.modal#response');
+                    var msg;
 
                     $form.find('.notice').remove();
                     $form.removeClass('processing');
@@ -56,13 +58,13 @@
                         if (response.response == 'fail') {
                             $form.trigger('failed-submit', response);
 
-                            var msg = '';
+                            msg = '';
 
                             if (response.fields) {
                                 var tn = 0;
 
                                 for (var i in response.fields) {
-                                    if ($form[0][i].type != 'hidden') {
+                                    if ($form[0][i] && $form[0][i].type != 'hidden') {
                                         var $notice = $('<div/>').html(formatMessage(response.fields[i])).wrap('<div/>').parent().addClass('notice').hide();
 
                                         (function(form, $notice) {
@@ -82,7 +84,7 @@
                                                 $notice.addClass('from-top');
                                                 $notice.css('margin-top', -($notice.outerHeight() + 8));
                                             } else {
-                                                $notice.children('div').css('position', 'relative').css('top', -($notice.outerHeight() * 0.5))
+                                                $notice.children('div').css('position', 'relative').css('top', -($notice.outerHeight() * 0.5));
                                             }
                                             $notice.css('transition-delay', (tn * 0.001) + 's').show().addClass('animated');
                                         })($form[0], $notice);
@@ -106,8 +108,19 @@
                             $form.trigger('success-submit', response);
                             $form.get(0).reset();
                             $form.closest('.modal').modal('hide');
-                            $response.find('.modal-body > .response').html(response.messages.join('<br>'));
-                            $response.modal();
+
+                            if (response.messages && response.messages.length) {
+                                msg = response.messages.join('<br>');
+
+                                if (msg != '') {
+                                    $response.find('.modal-body > .response').html(msg);
+                                    $response.modal();
+                                }
+                            }
+
+                            if (response.redirect) {
+                                location = response.redirect;
+                            }
                         }
                     }
                 }

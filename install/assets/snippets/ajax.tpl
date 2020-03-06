@@ -1,4 +1,5 @@
-﻿/**
+﻿//<?php
+/**
  * ajax
  *
  * Обработка форм
@@ -7,49 +8,6 @@
  * @internal    @properties
  * @internal    @installset sample
  */
-
-//<?php
-if (!function_exists('parseQueryParams')) {
-    function parseQueryParams($query) {
-        $utmparams = [
-            'utm_source'   => 'Рекламная система',
-            'utm_campaign' => 'Кампания',
-            'utm_content'  => 'Содержание объявления',
-            'utm_term'     => 'Ключевое слово',
-            'keyword'      => 'Ключевое слово',
-            'q'            => 'Поисковая фраза',
-            'query'        => 'Поисковая фраза',
-            'text'         => 'Поисковая фраза',
-            'words'        => 'Поисковая фраза',
-        ];
-
-        $crawlers = ['yandex.ru', 'rambler.ru', 'google.ru', 'google.com', 'mail.ru', 'bing.com', 'qip.ru'];
-
-        $out = $params = [];
-
-        if (preg_match('/\?(.+)$/', urldecode($query), $parts)) {
-            foreach ($crawlers as $crawler) {
-                if (stristr($parts[1], $crawler)) {
-                    $out['Система'] = $crawler;
-                }
-            }
-
-            parse_str($parts[1], $params);
-
-            foreach ($utmparams as $name => $title) {
-                if (!empty($params[$name])) {
-                    $out[$title] = (md5($params[$name]) == md5(iconv('UTF-8', 'UTF-8', $params[$name])) ? $params[$name] : iconv('cp1251', 'utf-8', $params[$name]));
-                }
-            }
-
-            if (!empty($out)) {
-                return $out;
-            }
-        }
-
-        return null;
-    }
-}
 
 if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($_POST['formid'])) {
@@ -99,57 +57,49 @@ if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
 
         $params = array_merge($params, [
             'prepareProcess' => array_merge($config['prepareProcess'], [
-                function($modx, $data, $fl, $name) {
-                    if (isset($data['pid']) && is_numeric($data['pid'])) {
-                        $fl->setField('page', $modx->runSnippet('DLCrumbs', [
-                            'id'           => $data['pid'],
-                            'hideMain'     => 1,
-                            'showCurrent'  => 1,
-                            'addWhereList' => 'c.id != 1',
-                            'tpl'          => '@CODE:[+title+] -&nbsp;',
-                            'tplLast'      => '@CODE:[+title+]',
-                            'ownerTPL'     => '@CODE:[+crumbs.wrap+]',
-                        ]));
-                    }
-
-                    $utm = '';
-
-                    foreach (['sreferer' => 'Параметры перехода', 'squery' => 'Параметры визита'] as $section => $sectionname) {
-                        if (isset($_POST[$section]) && is_string($_POST[$section])) {
-                            $params = parseQueryParams($_POST[$section]);
-
-                            if (!empty($params)) {
-                                $out = '';
-
-                                foreach ($params as $key => $value) {
-                                    $out .= '<tr><td>' . $key . ':&nbsp;</td><td>' . htmlspecialchars($value) . '</td></tr>';
-                                }
-
-                                $utm .= '<br><b>' . $sectionname . ':</b>' . '<table><tbody>' . $out . '</tbody></table>';
-                            }
-                        }
-                    }
-
-                    $fl->setPlaceholder('utm', $utm);
-                },
+                'prepareAddPageToLetter',
+                'prepareAddUTMLabelsToLetter',
             ]),
         ]);
 
-        $data = $modx->runSnippet('FormLister', $params);
+        $snippet = 'FormLister';
+
+        if ($formid == 'order' && isset($modx->snippetCache['Order'])) {
+            $snippet = 'Order';
+        }
+
+        $data = $modx->runSnippet($snippet, $params);
 
         if (empty($data['status'])) {
             $json = [
                 'response' => 'fail',
-                'fields'   => $data['errors'],
-                'messages' => $data['messages'],
             ];
+
+            if (!empty($data['errors'])) {
+                $json['fields'] = $data['errors'];
+            }
+
+            if (!empty($data['messages'])) {
+                $json['messages'] = $data['messages'];
+            }
         } else {
             $fl = $modx->getPlaceholder('_FormLister');
 
+            require_once MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLTemplate.class.php';
+            $DLTemplate = \DLTemplate::getInstance($modx);
+
             $json = [
                 'response' => 'success',
-                'messages' => [$fl->getCFGDef('successMessage', 'Заявка отправлена!')],
+                'messages' => [
+                    $DLTemplate->parseChunk($fl->getCFGDef('successTpl', '@CODE:' . $fl->getCFGDef('successMessage', 'Заявка отправлена!')), $data['fields'], true),
+                ],
             ];
+
+            $redirect = $fl->getField('redirectTo');
+
+            if (!empty($redirect)) {
+                $json['redirect'] = $redirect;
+            }
         }
 
         return json_encode($json, JSON_UNESCAPED_UNICODE);
