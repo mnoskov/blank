@@ -10,38 +10,64 @@
  */
 
 $tags = [
-    'meta_description' => 'description',
-    'meta_keywords'    => 'keywords',
-    'og_title'         => 'og:title',
-    'og_description'   => 'og:description',
-    'og_image'         => 'og:image',
+    'description' => [
+        'meta_description' => 'tv',
+        'introtext' => 'doc',
+        'client_meta_description' => 'cfg',
+    ],
+    'keywords' => [
+        'meta_keywords' => 'tv',
+        'client_meta_keywords' => 'cfg',
+    ],
+    'og:title' => [
+        'og_title' => 'tv',
+        function($modx) {
+            return $modx->runSnippet('metatitle');
+        },
+        'client_og_title' => 'cfg',
+    ],
+    'og:description' => [
+        'og_description' => 'tv',
+        'meta_description' => 'values',
+        'client_og_description' => 'cfg',
+    ],
+    'og:image' => [
+        'og_image' => 'tv',
+        'image' => 'tv',
+        'client_og_image' => 'cfg',
+    ],
 ];
 
 $output = '';
+$values = [];
 
-foreach ($tags as $tv => $tag) {
+foreach ($tags as $tag => $sources) {
     $value = '';
 
-    if (!empty($modx->documentObject[$tv][1])) {
-        $value = $modx->documentObject[$tv][1];
-    } else {
-        $conf = $modx->getConfig('client_' . $tv);
-
-        if (!empty($conf)) {
-            $value = $conf;
+    foreach ($sources as $source => $from) {
+        if (is_callable($from)) {
+            $value = call_user_func($from, $modx);
         } else {
-            if ($tv == 'og_title') {
-                $value = $modx->runSnippet('metatitle');
+            switch ($from) {
+                case 'tv':     $value = $modx->documentObject[$source][1]; break;
+                case 'doc':    $value = $modx->documentObject[$source]; break;
+                case 'cfg':    $value = $modx->getConfig($source); break;
+                case 'values': $value = $values[$source]; break;
             }
+        }
+
+        if (!empty($value)) {
+            break;
         }
     }
 
     if (!empty($value)) {
-        if ($tv == 'og_image') {
+        if ($tag == 'og:image') {
             $value = $modx->getConfig('site_url') . $value;
         }
 
-        $output .= '<meta property="' . $tag . '" content="' . $value . '">' . "\n\t";
+        $output .= '<meta name="' . $tag . '" content="' . $value . '">' . "\n\t";
+        $values[$tv] = $value;
     }
 }
 
