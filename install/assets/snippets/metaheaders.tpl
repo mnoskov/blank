@@ -4,19 +4,23 @@
  *
  * render seo and opengraph headers
  *
- * @category    snippet
- * @internal    @properties
- * @internal    @installset sample
+ * @category	snippet
+ * @internal	@modx_category 
+ * @internal	@installset base
+ * @internal	@overwrite true
+ * @internal	@properties {}
  */
 
 $tags = [
     'description' => [
         'meta_description' => 'tv',
+		'seotemplates.meta_description' => 'ph',
         'introtext' => 'doc',
         'client_meta_description' => 'cfg',
     ],
     'keywords' => [
         'meta_keywords' => 'tv',
+		'seotemplates.meta_keywords' => 'ph',
         'client_meta_keywords' => 'cfg',
     ],
     'og:title' => [
@@ -49,6 +53,7 @@ foreach ($tags as $tag => $sources) {
             $value = call_user_func($from, $modx);
         } else {
             switch ($from) {
+				case 'ph':     $value = $modx->getPlaceholder($source); break;
                 case 'tv':     $value = $modx->documentObject[$source][1]; break;
                 case 'doc':    $value = $modx->documentObject[$source]; break;
                 case 'cfg':    $value = $modx->getConfig($source); break;

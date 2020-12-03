@@ -23,5 +23,9 @@ return [
             'caption' => 'OpenGraph description',
             'type'  => 'textareamini',
         ],
+        'seo_templates' => [
+            'caption' => 'Шаблоны элементов',
+            'type'  => 'custom_tv:pagebuilder',
+        ],
     ],
 ];
