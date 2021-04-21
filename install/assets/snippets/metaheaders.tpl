@@ -5,7 +5,7 @@
  * render seo and opengraph headers
  *
  * @category	snippet
- * @internal	@modx_category 
+ * @internal	@modx_category
  * @internal	@installset base
  * @internal	@overwrite true
  * @internal	@properties {}
@@ -15,7 +15,7 @@ $tags = [
     'description' => [
         'meta_description' => 'tv',
 		'seotemplates.meta_description' => 'ph',
-        'introtext' => 'doc',
+//        'introtext' => 'doc',
         'client_meta_description' => 'cfg',
     ],
     'keywords' => [
@@ -69,6 +69,9 @@ foreach ($tags as $tag => $sources) {
     if (!empty($value)) {
         if ($tag == 'og:image') {
             $value = $modx->getConfig('site_url') . $value;
+
+            $output .= '<meta name="twitter:card" content="summary_large_image">' . "\n\t";
+            $output .= '<meta name="twitter:image" content="' . $value . '">' . "\n\t";
         }
 
         $output .= '<meta name="' . $tag . '" content="' . $value . '">' . "\n\t";
