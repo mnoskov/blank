@@ -70,35 +70,39 @@ if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
 
         $data = $modx->runSnippet($snippet, $params);
 
-        if (empty($data['status'])) {
-            $json = [
-                'response' => 'fail',
-            ];
-
-            if (!empty($data['errors'])) {
-                $json['fields'] = $data['errors'];
-            }
-
-            if (!empty($data['messages'])) {
-                $json['messages'] = $data['messages'];
-            }
+        if (isset($params['prepareResponse'])) {
+            $json = call_user_func($params['prepareResponse'], $modx, $data, $fl);
         } else {
-            $fl = $modx->getPlaceholder('_FormLister');
+            if (empty($data['status'])) {
+                $json = [
+                    'response' => 'fail',
+                ];
 
-            require_once MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLTemplate.class.php';
-            $DLTemplate = \DLTemplate::getInstance($modx);
+                if (!empty($data['errors'])) {
+                    $json['fields'] = $data['errors'];
+                }
 
-            $json = [
-                'response' => 'success',
-                'messages' => [
-                    $DLTemplate->parseChunk($fl->getCFGDef('successTpl', '@CODE:' . $fl->getCFGDef('successMessage', 'Заявка отправлена!')), $data['fields'], true),
-                ],
-            ];
+                if (!empty($data['messages'])) {
+                    $json['messages'] = $data['messages'];
+                }
+            } else {
+                $fl = $modx->getPlaceholder('_FormLister');
 
-            $redirect = $fl->getField('redirectTo');
+                require_once MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLTemplate.class.php';
+                $DLTemplate = \DLTemplate::getInstance($modx);
 
-            if (!empty($redirect)) {
-                $json['redirect'] = $redirect;
+                $json = [
+                    'response' => 'success',
+                    'messages' => [
+                        $DLTemplate->parseChunk($fl->getCFGDef('successTpl', '@CODE:' . $fl->getCFGDef('successMessage', 'Заявка отправлена!')), $data['fields'], true),
+                    ],
+                ];
+
+                $redirect = $fl->getField('redirectTo');
+
+                if (!empty($redirect)) {
+                    $json['redirect'] = $redirect;
+                }
             }
         }
 
