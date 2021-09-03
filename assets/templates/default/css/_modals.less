@@ -2,6 +2,24 @@ body.modal-open {
     overflow: hidden !important;
 }
 
+.modal.fade {
+    .modal-dialog {
+        -webkit-transform: scale(0.9);
+        -ms-transform: scale(0.9);
+        -o-transform: scale(0.9);
+        transform: scale(0.9);
+    }
+
+    &.in {
+        .modal-dialog {
+            -webkit-transform: scale(1);
+            -ms-transform: scale(1);
+            -o-transform: scale(1);
+            transform: scale(1);
+        }
+    }
+}
+
 .modal {
     text-align: center;
 
