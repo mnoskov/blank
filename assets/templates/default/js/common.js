@@ -1,5 +1,5 @@
 var slickDefaults = {
-    prevArrow: '<a href="#" class="ctrl prev"><i class="icon-left-arrow"></i></a>', 
+    prevArrow: '<a href="#" class="ctrl prev"><i class="icon-left-arrow"></i></a>',
     nextArrow: '<a href="#" class="ctrl next"><i class="icon-right-arrow"></i></a>',
     swipeToSlide: true,
     customPaging: function() {
@@ -7,19 +7,45 @@ var slickDefaults = {
     }
 };
 
-$(function() {
-	if ($.mask) {
-		$('input.mask-phone').mask('+7 (999) 999-99-99');
-	}
+var slickCustoms = {
+    'selector': {
+        // options
+    }
+};
 
-	$('.slick').slick(slickDefaults);
+$.fn.customSlick = function() {
+    return this.each(function() {
+        var $slick  = $(this);
+        var options = $.extend({}, slickDefaults);
+
+        for (var selector in slickCustoms) {
+            if ($slick.is(selector)) {
+                options = $.extend(options, slickCustoms[selector]);
+                break;
+            }
+        }
+
+        $slick.slick(options);
+    });
+};
+
+$(function() {
+    if ($.mask) {
+        $('input.mask-phone').mask('+7 (999) 999-99-99');
+    }
+
+    $('.slick').customSlick();
 
     $('.user-content iframe').each(function() {
         $(this).addClass('embed-responsive-item').wrap('<div class="embed-responsive embed-responsive-16by9"/>');
     });
 
-    $('.toggle-menu').click(function() {
-        $(document.body).toggleClass('menu-opened');
+    $('.toggle-menu, .toggle-search, .toggle-filters').click(function(e) {
+        e.preventDefault();
+        var match = this.getAttribute('class').match(/toggle-([a-z]+)/);
+        if (match) {
+            $(document.body).toggleClass(match[1] + '-opened');
+        }
     });
 });
 
@@ -48,8 +74,12 @@ $(document).on('success-submit', 'form', function(e, response) {
     }
 });
 
+$(document).on('click', 'a[data-goal], span[data-goal]', function() {
+    $(this).reachGoal();
+});
+
 /**
- * Usage: 
+ * Usage:
  * <span class="tapable-phone" data-phone="+79000000000">+7 (900) 000-00-00</span>
  */
 $(function(){var a=$(".tapable-phone");a.each(function(){var a=$(this).attr("data-phone");a||(a=this.innerText.replace(/[^\d]+/g,"")),$(this).data("href","tel:"+a),$(this).data("originalMarkup",this.innerHTML)}),$(window).on("custombreakpoint",function(t,i){a.each(function(){var a=$(this);"xs"==i||"sm"==i?this.innerHTML='<a href="'+a.data("href")+'">'+a.data("originalMarkup")+"</a>":this.innerHTML=a.data("originalMarkup")})})});
