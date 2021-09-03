@@ -1,3 +1,55 @@
+var showLoadingIndicator = function() {
+    var $loadingIndicator = $(document.body).children('.loading-indicator');
+    if (!$loadingIndicator.length) {
+        $loadingIndicator = $('<div class="loading-indicator"/>').appendTo(document.body);
+    }
+
+    setTimeout(function() {
+        $loadingIndicator.addClass('visible');
+    });
+};
+
+var hideLoadingIndicator = function() {
+    $(document.body).children('.loading-indicator').removeClass('visible');
+};
+
+var showModal = function(id, $trigger) {
+    var $target  = $(id);
+
+    if ($target.length) {
+        return;
+    }
+
+    showLoadingIndicator();
+
+    !function($trigger) {
+        $.ajax({
+            url: '/modal.php',
+            type: 'POST',
+            data: {
+                id: id.replace('#', '')
+            },
+            dataType: 'json',
+            complete: function(xhr, status) {
+                hideLoadingIndicator();
+
+                if (status == 'success') {
+                    var response = xhr.responseJSON;
+
+                    if (response.markup) {
+                        var $modal = $(response.markup).appendTo(document.body);
+                        $modal.modal('show', $trigger);
+                    }
+                }
+            }
+        });
+    }($trigger);
+};
+
+$(document).on('click', '[data-toggle="modal"]', function(e) {
+    showModal(this.dataset.target, $(this));
+});
+
 (function() {
     var formatMessage = function(object) {
         var result = '';

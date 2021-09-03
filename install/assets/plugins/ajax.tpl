@@ -4,19 +4,44 @@
  *
  * Обработка форм
  *
- * @category    snippet
- * @internal    @properties
- * @internal    @installset sample
+ * @category    plugin
+ * @internal    @events OnPageNotFound
+ * @internal    @disabled 0
+ * @internal    @installset base
  */
 
-if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (empty($_POST['formid'])) {
-        return '';
+if (empty($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] != 'POST' || empty($_GET['q'])) {
+    return;
+}
+
+switch ($_GET['q']) {
+    case 'modal.php': {
+        if (empty($_POST['id']) || !is_scalar($_POST['id'])) {
+            exit;
+        }
+
+        $chunk = $modx->getChunk('modal_' . $_POST['id']);
+
+        if (!empty($chunk)) {
+            echo json_encode([
+                'markup' => $modx->parseDocumentSource($chunk),
+            ]);
+        }
+
+        exit;
     }
 
-    $formid = $_POST['formid'];
+    case 'ajax.json': {
+        if (empty($_POST['formid'])) {
+            exit;
+        }
 
-    if (is_string($formid) && preg_match('/^[a-z]{2,32}$/', $formid)) {
+        $formid = $_POST['formid'];
+
+        if (!is_string($formid) || !preg_match('/^[a-z]{2,32}$/', $formid)) {
+            exit;
+        }
+
         $to = $modx->getConfig('client_email_recipients_' . $formid);
         if (empty($to)) {
             $to = $modx->getConfig('client_email_recipients');
@@ -36,7 +61,7 @@ if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
 
             if (!is_readable($filename)) {
                 if ($required) {
-                    return '';
+                    exit;
                 } else {
                     continue;
                 }
@@ -106,6 +131,7 @@ if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
             }
         }
 
-        return json_encode($json, JSON_UNESCAPED_UNICODE);
+        echo json_encode($json, JSON_UNESCAPED_UNICODE);
+        exit;
     }
 }
