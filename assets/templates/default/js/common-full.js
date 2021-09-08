@@ -193,15 +193,28 @@ $(document).on('click', '[data-toggle="modal"]', function(e) {
     });
 
     $('.modal').on('show.bs.modal', function(e) {
-        if (e.relatedTarget) {
-            var $modal = $(this);
+        var $trigger = $(e.relatedTarget),
+            $modal = $(this),
+            $form = $modal.find('form'),
+            originalGoal = $form.data('goal');
 
-            $.each(e.relatedTarget.attributes, function(i, attr) {
-                var match = attr.name.match(/^data-set-([a-zA-Z-_0-9]+)/);
+        if ($form) {
+            $form.attr('data-goal', originalGoal);
+        }
 
-                if (match) {
-                    var name = match[1],
-                        val  = attr.value;
+        if ($trigger.length) {
+            var data = $trigger.data();
+
+            for (var p in data) {
+                if (data.hasOwnProperty(p) && /^set[A-Z]+/.test(p)) {
+                    if ($form && p == 'setGoal') {
+                        $form.attr('data-goal', data[p]);
+                    }
+
+                    var val = data[p],
+                        name = p.match(/^set(.*)/)[1].replace(/^[A-Z]/, function(s) {
+                            return (s || '').toLowerCase();
+                        });
 
                     $modal.find('[name="' + name + '"]').val(val);
                     $modal.find('[data-get="' + name + '"]').each(function() {
@@ -214,7 +227,7 @@ $(document).on('click', '[data-toggle="modal"]', function(e) {
                         }
                     });
                 }
-            });
+            }
         }
     });
 
