@@ -49,6 +49,12 @@ $(function() {
     });
 });
 
+$(document).on('shown.bs.modal', function(e) {
+    if ($.mask) {
+        $(this).find('input.mask-phone').mask('+7 (999) 999-99-99');
+    }
+});
+
 $(document).on('success-submit', 'form', function(e, response) {
     if (window.Comagic && typeof Comagic.addOfflineRequest == 'function') {
         var data = {},
